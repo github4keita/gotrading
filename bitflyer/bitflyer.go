@@ -148,7 +148,6 @@ func (t *Ticker) GetMidPrice() float64 {
 }
 
 func (t *Ticker) DateTime() time.Time {
-	t.Timestamp = "2018-09-27T02:01:59.6005284Z" // 不具合のため、とりあえずハードコード
 	dateTime, err := time.Parse(time.RFC3339, t.Timestamp)
 	if err != nil {
 		log.Printf("action=DateTime err=%s", err.Error())
