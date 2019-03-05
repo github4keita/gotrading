@@ -6,8 +6,8 @@ import (
 
 type DataFrameCandle struct {
 	ProductCode string        `json:"product_code"`
-	Duration    time.Duration `json:duration`
-	Candles     []Candle      `json:candles`
+	Duration    time.Duration `json:"duration"`
+	Candles     []Candle      `json:"candles"`
 }
 
 func (df *DataFrameCandle) Times() []time.Time {
