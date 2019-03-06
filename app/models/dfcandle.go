@@ -2,12 +2,20 @@ package models
 
 import (
 	"time"
+
+	talib "github.com/markcheno/go-talib"
 )
 
 type DataFrameCandle struct {
 	ProductCode string        `json:"product_code"`
 	Duration    time.Duration `json:"duration"`
 	Candles     []Candle      `json:"candles"`
+	Smas        []Sma         `json:"smas,omitempty"` // スライスにしている理由はPeriodが7とか14とか数種類あるので
+}
+
+type Sma struct {
+	Period int       `json:"period,omitempty"`
+	Values []float64 `json:"values,omitempty"`
 }
 
 func (df *DataFrameCandle) Times() []time.Time {
@@ -56,4 +64,17 @@ func (df *DataFrameCandle) Volumes() []float64 {
 		s[i] = candle.Volume
 	}
 	return s
+}
+
+func (df *DataFrameCandle) AddSma(period int) bool {
+	if len(df.Candles) > period {
+		df.Smas = append(df.Smas, Sma{
+			Period: period,
+			Values: talib.Sma(df.Closes(), period),
+		})
+
+		return true
+	}
+
+	return false
 }
