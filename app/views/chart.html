@@ -32,7 +32,23 @@
                 limit: 365,
                 numViews: 5,
             },
+            dataTable: {
+                index : 0,
+                value: null
+            },
+            sma: {
+                enable: false,
+                indexes: [],
+                periods: [],
+                values: []
+            },
         };
+
+        function initConfigValues(){
+            config.dataTable.index = 0;
+            config.sma.indexes = [];
+            config.sma.values = [];
+        }
 
         function drawChart(dataTable) {
             var chartDiv = document.getElementById('chart_div');
@@ -100,7 +116,16 @@
                 "duration": config.candlestick.duration,
             }
 
+            if (config.sma.enable == true) {
+                params["sma"] = true;
+                params["smaPeriod1"] = config.sma.periods[0];
+                params["smaPeriod2"] = config.sma.periods[1];
+                params["smaPeriod3"] = config.sma.periods[2];
+            }
+
             $.get("/api/candle/", params).done(function(data) {
+                initConfigValues();
+
                 var dataTable = new google.visualization.DataTable();
                 dataTable.addColumn('date', 'Date');
                 dataTable.addColumn('number', 'Low');
@@ -108,6 +133,10 @@
                 dataTable.addColumn('number', 'Close');
                 dataTable.addColumn('number', 'High');
                 dataTable.addColumn('number', 'Volume');
+
+                if (data["sma"] != undefined) {
+
+                }
 
                 var googleChartData = [];
                 var candles = data["candles"];
@@ -140,6 +169,28 @@
             }).mouseleave(function() {
                 config.api.enable = true;
             });
+
+            $('#inputSma').change(function() {
+                if (this.checked === true) {
+                    config.sma.enable = true;
+                } else {
+                    config.sma.enable = false;
+                }
+                send();
+            });
+
+            $("#inputSmaPeriod1").change(function() {
+                config.sma.periods[0] = this.value;
+                send();
+            });
+            $("#inputSmaPeriod2").change(function() {
+                config.sma.periods[1] = this.value;
+                send();
+            });
+            $("#inputSmaPeriod3").change(function() {
+                config.sma.periods[2] = this.value;
+                send();
+            });
         }
     </script>
 </head>
@@ -148,6 +199,13 @@
     <button onclick="changeDuration('1s');">1s</button>
     <button onclick="changeDuration('1m');">1m</button>
     <button onclick="changeDuration('1h');">1h</button>
+</div>
+
+<div>
+    SMA <input id="inputSma" type="checkbox">
+    Period<input id="inputSmaPeriod1" type="text" value="7" style="width: 15px;">
+    <input id="inputSmaPeriod2" type="text" value="14" style="width: 15px;">
+    <input id="inputSmaPeriod3" type="text" value="50" style="width: 15px;">
 </div>
 
 <div id="dashboard_div">
