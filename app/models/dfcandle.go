@@ -14,11 +14,13 @@ type DataFrameCandle struct {
 	Emas        []Ema         `json:"emas,omitempty"`
 }
 
+// SMA（単純移動平均線）
 type Sma struct {
 	Period int       `json:"period,omitempty"`
 	Values []float64 `json:"values,omitempty"`
 }
 
+// EMA（指数平滑移動平均線）
 type Ema struct {
 	Period int       `json:"period,omitempty"`
 	Values []float64 `json:"values,omitempty"`
@@ -72,6 +74,7 @@ func (df *DataFrameCandle) Volumes() []float64 {
 	return s
 }
 
+// SMA算出
 func (df *DataFrameCandle) AddSma(period int) bool {
 	if len(df.Candles) > period {
 		df.Smas = append(df.Smas, Sma{
@@ -85,6 +88,7 @@ func (df *DataFrameCandle) AddSma(period int) bool {
 	return false
 }
 
+// EMA算出
 func (df *DataFrameCandle) AddEma(period int) bool {
 	if len(df.Candles) > period {
 		df.Emas = append(df.Emas, Ema{
