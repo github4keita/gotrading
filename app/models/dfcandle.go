@@ -12,6 +12,7 @@ type DataFrameCandle struct {
 	Candles     []Candle      `json:"candles"`
 	Smas        []Sma         `json:"smas,omitempty"` // スライスにしている理由はPeriodが7とか14とか数種類あるので
 	Emas        []Ema         `json:"emas,omitempty"`
+	BBands      *BBands       `json:"bbands,omitempty"`
 }
 
 // SMA（単純移動平均線）
@@ -24,6 +25,15 @@ type Sma struct {
 type Ema struct {
 	Period int       `json:"period,omitempty"`
 	Values []float64 `json:"values,omitempty"`
+}
+
+// BBands（ボリンジャーバンド）
+type BBands struct {
+	N    int       `json:"n,omitempty"`
+	K    float64   `json:"k,omitempty"`
+	Up   []float64 `json:"up,omitempty"`
+	Mid  []float64 `json:"mid,omitempty"`
+	Down []float64 `json:"down,omitempty"`
 }
 
 func (df *DataFrameCandle) Times() []time.Time {
@@ -95,6 +105,23 @@ func (df *DataFrameCandle) AddEma(period int) bool {
 			Period: period,
 			Values: talib.Ema(df.Closes(), period),
 		})
+
+		return true
+	}
+
+	return false
+}
+
+func (df *DataFrameCandle) AddBBands(n int, k float64) bool {
+	if n <= len(df.Closes()) {
+		up, mid, down := talib.BBands(df.Closes(), n, k, k, 0)
+		df.BBands = &BBands{
+			N:    n,
+			K:    k,
+			Up:   up,
+			Mid:  mid,
+			Down: down,
+		}
 
 		return true
 	}
