@@ -135,9 +135,69 @@ func apiCandleHandler(w http.ResponseWriter, r *http.Request) {
 		df.AddBBands(n, float64(k))
 	}
 
+	// 一目均衡表
 	ichimoku := r.URL.Query().Get("ichimoku")
 	if ichimoku != "" {
 		df.AddIchimoku()
+	}
+
+	// RSI
+	rsi := r.URL.Query().Get("rsi")
+	if rsi != "" {
+		strPeriod := r.URL.Query().Get("rsiPeriod")
+		period, err := strconv.Atoi(strPeriod)
+		if strPeriod == "" || err != nil || period < 0 {
+			period = 14
+		}
+		df.AddRsi(period)
+	}
+
+	// MACD
+	macd := r.URL.Query().Get("macd")
+	if macd != "" {
+		strPeriod1 := r.URL.Query().Get("macdPeriod1")
+		period1, err := strconv.Atoi(strPeriod1)
+		if strPeriod1 == "" || err != nil || period1 < 0 {
+			period1 = 12
+		}
+
+		strPeriod2 := r.URL.Query().Get("macdPeriod2")
+		period2, err := strconv.Atoi(strPeriod2)
+		if strPeriod2 == "" || err != nil || period2 < 0 {
+			period2 = 26
+		}
+
+		strPeriod3 := r.URL.Query().Get("macdPeriod3")
+		period3, err := strconv.Atoi(strPeriod3)
+		if strPeriod3 == "" || err != nil || period3 < 0 {
+			period3 = 9
+		}
+
+		df.AddMacd(period1, period2, period3)
+	}
+
+	hv := r.URL.Query().Get("hv")
+	if hv != "" {
+		strPeriod1 := r.URL.Query().Get("hvPeriod1")
+		period1, err := strconv.Atoi(strPeriod1)
+		if strPeriod1 == "" || err != nil || period1 < 0 {
+			period1 = 21
+		}
+		df.AddHv(period1)
+
+		strPeriod2 := r.URL.Query().Get("hvPeriod2")
+		period2, err := strconv.Atoi(strPeriod2)
+		if strPeriod2 == "" || err != nil || period2 < 0 {
+			period2 = 63
+		}
+		df.AddHv(period2)
+
+		strPeriod3 := r.URL.Query().Get("hvPeriod3")
+		period3, err := strconv.Atoi(strPeriod3)
+		if strPeriod3 == "" || err != nil || period3 < 0 {
+			period3 = 252
+		}
+		df.AddHv(period3)
 	}
 
 	js, err := json.Marshal(df)

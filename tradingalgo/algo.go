@@ -1,5 +1,11 @@
 package tradingalgo
 
+import (
+	"math"
+
+	talib "github.com/markcheno/go-talib"
+)
+
 func minMax(inReal []float64) (float64, float64) {
 	min := inReal[0]
 	max := inReal[0]
@@ -58,4 +64,19 @@ func IchimokuCloud(inReal []float64) ([]float64, []float64, []float64, []float64
 	}
 
 	return tenkan, kijun, senkouA, senkouB, chikou
+}
+
+func Hv(inReal []float64, inTimePeriod int) []float64 {
+	change := make([]float64, 0)
+	for i := range inReal {
+		if i == 0 {
+			continue
+		}
+
+		dayChange := math.Log(float64(inReal[i]) / float64(inReal[i-1]))
+
+		change = append(change, dayChange)
+	}
+
+	return talib.StdDev(change, inTimePeriod, math.Sqrt(1)*100)
 }
