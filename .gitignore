@@ -1,2 +1,4 @@
+.go-version
+.envrc
 gotrading.log
 stockdata.sql
